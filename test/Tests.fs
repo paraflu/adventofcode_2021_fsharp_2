@@ -17,4 +17,6 @@ let ``First test`` () =
         }
 
     let position = sequence |> parseLines |> navigate
-    Assert.Equal(150, position |> coord_toint)
+    Assert.Equal(15, position.x)
+    Assert.Equal(60, position.y)
+    Assert.Equal(900, position |> coord_toint)
