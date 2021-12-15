@@ -7,7 +7,27 @@ type Command =
     | Down of direction: int
     | Up of direction: int
 
-type Coord = { x: int32; y: int32 }
+type Coord =
+    { x: int32
+      y: int32
+      aim: int32 }
+    member self.toInt() = self.x * self.y
+
+    member self.navigate(command: Command) =
+        match command with
+        | Forward_ x ->
+            { x = self.x + x
+              y = self.y + x * self.aim
+              aim = self.aim }
+        | Down y ->
+            { x = self.x
+              y = self.y
+              aim = self.aim + y }
+        | Up y ->
+            { x = self.x
+              y = self.y
+              aim = self.aim - y }
+
 
 let coord_toint (it: Coord) = it.x * it.y
 
@@ -23,12 +43,9 @@ let parseLines (sequence: seq<string>) : seq<Command> =
         | _ -> raise (InvalidDirection("Not supported")))
 
 let navigate (sequence: seq<Command>) : Coord =
+    let mutable position = { x = 0; y = 0; aim = 0 }
+
     sequence
-    |> Seq.map (fun it ->
-        match it with
-        | Forward_ x -> { x = x; y = 0 }
-        | Down x -> { x = 0; y = x }
-        | Up x -> { x = 0; y = -x })
-    |> Seq.reduce (fun curr next ->
-        { x = curr.x + next.x
-          y = curr.y + next.y })
+    |> Seq.iter (fun cmd -> position <- position.navigate (cmd))
+
+    position
