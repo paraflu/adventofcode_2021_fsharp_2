@@ -7,7 +7,7 @@ type Command =
     | Down of direction: int
     | Up of direction: int
 
-type Coord = { x: int32; y: int32 }
+type Coord = { x: int32; y: int32; aim: int32 }
 
 let coord_toint (it: Coord) = it.x * it.y
 
@@ -26,9 +26,10 @@ let navigate (sequence: seq<Command>) : Coord =
     sequence
     |> Seq.map (fun it ->
         match it with
-        | Forward_ x -> { x = x; y = 0 }
-        | Down x -> { x = 0; y = x }
-        | Up x -> { x = 0; y = -x })
+        | Forward_ x -> { x = x; y = 0; aim = 5 }
+        | Down x -> { x = 0; y = x; aim = x }
+        | Up x -> { x = 0; y = -x; aim = -x })
     |> Seq.reduce (fun curr next ->
         { x = curr.x + next.x
-          y = curr.y + next.y })
+          y = curr.y + next.y * next.aim
+          aim = 0 })
